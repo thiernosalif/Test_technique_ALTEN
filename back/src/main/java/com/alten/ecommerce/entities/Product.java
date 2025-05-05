@@ -2,9 +2,15 @@ package com.alten.ecommerce.entities;
 
 import com.alten.ecommerce.enums.InventoryStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
 public class Product {
 
     @Id
@@ -24,6 +30,6 @@ public class Product {
     private InventoryStatus inventoryStatus;
 
     private int rating;
-    private long createdAt;
-    private long updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 }

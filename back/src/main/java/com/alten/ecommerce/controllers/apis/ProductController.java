@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public interface ProductController {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto.class)) }),
             @ApiResponse(responseCode = "400", description = "Bad request")
     })
+    @PreAuthorize("authentication.name == 'admin@admin.com'")
     @PostMapping(value = APP_API_ROOT + "/products")
     ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto);
 
@@ -53,6 +55,7 @@ public interface ProductController {
             @ApiResponse(responseCode = "400", description = "Bad request"),
             @ApiResponse(responseCode = "404", description = "ProductDto Not Found", content = @Content())
     })
+    @PreAuthorize("authentication.name == 'admin@admin.com'")
     @DeleteMapping(value = APP_API_ROOT + "/products/{id}")
     void deleteProduct(@PathVariable Long id);
 }

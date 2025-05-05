@@ -32,7 +32,9 @@ public class SecurityConfig {
             "/configuration/security",
             "/swagger-ui/**",
             "/webjars/**",
-            "/swagger-ui.html"};
+            "/swagger-ui.html",
+    "/api/v1/ecom/account",
+    "/api/v1/ecom/token"};
 
 
 
@@ -43,7 +45,9 @@ public class SecurityConfig {
         @Autowired
         private UserDetailsService userDetailsService;
 
-        @Bean
+        //, "/swagger-ui/**", "/v3/api-docs/**", "/login", "/register"
+
+       /* @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             return http
                     .csrf(csrf -> csrf.disable())
@@ -57,9 +61,41 @@ public class SecurityConfig {
                     .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                     .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                     .build();
-        }
+        }*/
 
-        @Bean
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/ecom/token", "/api/v1/ecom/account", "/h2-console/**").permitAll()
+                        .requestMatchers(WHITE_LIST_URL).permitAll()
+                        .requestMatchers("/api/v1/ecom/products/**").authenticated()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+                .build();
+    }
+
+    /*@Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
+                )
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }*/
+
+
+
+    @Bean
         public AuthenticationManager authManager(AuthenticationConfiguration config) throws Exception {
             return config.getAuthenticationManager();
         }
@@ -72,8 +108,9 @@ public class SecurityConfig {
             return provider;
         }
 
+
         @Bean
-        public PasswordEncoder passwordEncoder() {
+        public BCryptPasswordEncoder passwordEncoder() {
             return new BCryptPasswordEncoder();
         }
 }

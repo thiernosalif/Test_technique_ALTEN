@@ -7,6 +7,8 @@ spring:
 
   h2:
     console.enabled: true
+    console:
+      path: /h2-console
   datasource:
     url: jdbc:h2:mem:dcbapp
     driverClassName: org.h2.Driver
@@ -18,8 +20,9 @@ spring:
       hibernate:
         format_sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
 
   main:
     allow-circular-references: true
@@ -32,13 +35,13 @@ logging:
   level:
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
-application:
-  security:
-    jwt:
-      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-      expiration: 86400000 # a day
-      refresh-token:
-        expiration: 604800000 # 7 days
+
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+
+  #expiration: 86400000 # a day
+     # refresh-token:
+       # expiration: 604800000 # 7 days
 
 
 
