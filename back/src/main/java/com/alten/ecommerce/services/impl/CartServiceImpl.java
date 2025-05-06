@@ -5,6 +5,7 @@ import com.alten.ecommerce.entities.Product;
 import com.alten.ecommerce.entities.User;
 import com.alten.ecommerce.repository.ProductRepository;
 import com.alten.ecommerce.repository.UserRepository;
+import com.alten.ecommerce.repository.CartRepository;
 import com.alten.ecommerce.services.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import java.util.Set;
 @Service
 public class CartServiceImpl implements CartService {
 
-    @Autowired
+
     private CartRepository cartRepository;
 
     @Autowired

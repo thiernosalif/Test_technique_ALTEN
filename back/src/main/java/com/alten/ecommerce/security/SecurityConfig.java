@@ -1,20 +1,20 @@
 package com.alten.ecommerce.security;
 
+import com.alten.ecommerce.services.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -32,85 +32,74 @@ public class SecurityConfig {
             "/configuration/security",
             "/swagger-ui/**",
             "/webjars/**",
-            "/swagger-ui.html",
-    "/api/v1/ecom/account",
-    "/api/v1/ecom/token"};
+            "/swagger-ui.html"};
 
 
+    @Autowired
+    private JwtUtil jwtUtil;
 
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
-        @Autowired
-        private JwtAuthFilter jwtAuthFilter;
+    @Autowired
+    private SecurityService securityService;
 
-        @Autowired
-        private UserDetailsService userDetailsService;
-
-        //, "/swagger-ui/**", "/v3/api-docs/**", "/login", "/register"
-
-       /* @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            return http
-                    .csrf(csrf -> csrf.disable())
-                    .authorizeHttpRequests(auth -> auth
-                            .requestMatchers("/token", "/account", "/h2-console/**").permitAll()
-                            .requestMatchers("/products/**").authenticated()
-                            .anyRequest().authenticated()
-                    )
-                    .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                    .authenticationProvider(authenticationProvider())
-                    .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                    .headers(headers -> headers.frameOptions(frame -> frame.disable()))
-                    .build();
-        }*/
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
+        http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/ecom/token", "/api/v1/ecom/account", "/h2-console/**").permitAll()
+                        .requestMatchers("/api/v1/ecom/account", "/api/v1/ecom/token", "/h2-console/**").permitAll()
                         .requestMatchers(WHITE_LIST_URL).permitAll()
-                        .requestMatchers("/api/v1/ecom/products/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/ecom/products/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/api/v1/ecom/products").access(new WebExpressionAuthorizationManager("@securityService.isAdmin(authentication)"))
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/ecom/products/**").access(new WebExpressionAuthorizationManager("@securityService.isAdmin(authentication)"))
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/ecom/products/**").access(new WebExpressionAuthorizationManager("@securityService.isAdmin(authentication)"))
+
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
-                .build();
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .addFilterBefore(new JwtAuthFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
 
     /*@Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
+        http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        .requestMatchers("/api/v1/ecom/account", "/api/v1/ecom/token","/h2-console/**").permitAll()
+                        .requestMatchers(WHITE_LIST_URL).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/ecom/products").access(new WebExpressionAuthorizationManager("@securityService.isAdmin(authentication)"))
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/ecom/products/**").access(new WebExpressionAuthorizationManager("@securityService.isAdmin(authentication)"))
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/ecom/products/**").access(new WebExpressionAuthorizationManager("@securityService.isAdmin(authentication)"))
+                        .anyRequest().authenticated()
                 )
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                );
+               // .addFilterBefore(new JwtAuthFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }*/
 
-
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
-        public AuthenticationManager authManager(AuthenticationConfiguration config) throws Exception {
-            return config.getAuthenticationManager();
-        }
-
-        @Bean
-        public AuthenticationProvider authenticationProvider() {
-            DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-            provider.setUserDetailsService(userDetailsService);
-            provider.setPasswordEncoder(passwordEncoder());
-            return provider;
-        }
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
 
 
-        @Bean
-        public BCryptPasswordEncoder passwordEncoder() {
-            return new BCryptPasswordEncoder();
-        }
+
+
+
 }

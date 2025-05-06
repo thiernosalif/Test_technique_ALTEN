@@ -5,6 +5,7 @@ import com.alten.ecommerce.entities.User;
 import com.alten.ecommerce.entities.Wishlist;
 import com.alten.ecommerce.repository.ProductRepository;
 import com.alten.ecommerce.repository.UserRepository;
+import com.alten.ecommerce.repository.WishlistRepository;
 import com.alten.ecommerce.services.WishlistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
