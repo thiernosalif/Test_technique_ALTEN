@@ -9,4 +9,6 @@ public interface CartService {
     public void addProductToCart(String email, Long productId);
 
     public Set<Product> getCartProducts(String email);
+
+    public void removeProductFromCart(String email, Long productId);
 }

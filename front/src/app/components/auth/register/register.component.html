@@ -1,0 +1,30 @@
+<div class="form-container">
+  <h2>Inscription</h2>
+
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label>Nom d'utilisateur</label>
+      <input pInputText formControlName="username" />
+    </div>
+
+    <div class="form-group">
+      <label>Nom</label>
+      <input pInputText formControlName="firstname" />
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input pInputText type="email" formControlName="email" />
+    </div>
+
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <input pPassword formControlName="password" toggleMask />
+    </div>
+
+    <p-button label="S'inscrire" type="submit" [disabled]="registerForm.invalid"></p-button>
+  </form>
+
+  <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
+  <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+</div>

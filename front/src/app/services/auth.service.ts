@@ -1,37 +1,49 @@
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs';
+import { Router } from '@angular/router';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly TOKEN_URL = '/api/v1/ecom/token';
-  private readonly ACCOUNT_URL = '/api/v1/ecom/account';
+  private readonly TOKEN_KEY = 'token';
+  private readonly API_URL = 'http://localhost:8081/api/v1/ecom';
+  public isLoggedIn$ = new BehaviorSubject<boolean>(!!this.getToken());
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
-  login(email: string, password: string) {
-    return this.http.post<{ token: string }>(this.TOKEN_URL, { email, password }).pipe(
+
+  register(data: { username: string; firstname: string; email: string; password: string }): Observable<any> {
+    return this.http.post(`${this.API_URL}/account`, data);
+  }
+
+  login(credentials: { email: string; password: string }): Observable<{ token: string }> {
+    return this.http.post<{ token: string }>(`${this.API_URL}/token`, credentials).pipe(
       tap(response => {
-        localStorage.setItem('token', response.token);
+        localStorage.setItem(this.TOKEN_KEY, response.token);
+        this.isLoggedIn$.next(true);
       })
     );
   }
 
-  register(user: any) {
-    return this.http.post(this.ACCOUNT_URL, user);
+
+  logout(): void {
+    localStorage.removeItem(this.TOKEN_KEY);
+    this.isLoggedIn$.next(false);
+    this.router.navigate(['/login']);
   }
 
-  logout() {
-    localStorage.removeItem('token');
-  }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 
-  isLoggedIn(): boolean {
+
+  isAuthenticated(): boolean {
     return !!this.getToken();
   }
 }
+
+
+
+

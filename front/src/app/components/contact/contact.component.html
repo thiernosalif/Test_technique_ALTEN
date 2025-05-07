@@ -1,0 +1,25 @@
+<div class="contact-container">
+  <h2>Contact</h2>
+  <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+    <label>
+      Email :
+      <input type="email" formControlName="email" />
+    </label>
+    <div style="color: red" *ngIf="contactForm.get('email')?.invalid && contactForm.get('email')?.touched">
+      Email requis et valide
+    </div>
+
+    <label>
+      Message :
+      <textarea formControlName="message"></textarea>
+    </label>
+    <div *ngIf="contactForm.get('message')?.invalid && contactForm.get('message')?.touched">
+      Message requis (max 300 caractères)
+    </div>
+
+    <button type="submit" [disabled]="contactForm.invalid">Envoyer</button>
+  </form>
+
+
+  <p [@If]="successMessage" class="success">{{ successMessage }}</p>
+</div>

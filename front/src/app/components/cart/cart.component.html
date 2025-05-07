@@ -1,0 +1,21 @@
+<div class="cart-container" *ngIf="!loading; else loadingTemplate">
+  <h2 class="text-xl font-bold mb-4">Mon panier</h2>
+
+  <div *ngIf="cartProducts.length === 0">
+    <p>Votre panier est vide.</p>
+  </div>
+
+  <div *ngFor="let product of cartProducts" class="cart-item">
+    <div class="item-details">
+      <div class="item-name">{{ product.name }}</div>
+      <div class="item-price">{{ product.price }} €</div>
+    </div>
+    <button (click)="removeFromCart(product.id)" class="remove-btn">Supprimer</button>
+  </div>
+</div>
+
+<ng-template #loadingTemplate>
+  <p>Chargement du panier...</p>
+</ng-template>
+
+

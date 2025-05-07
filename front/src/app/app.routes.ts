@@ -1,11 +1,16 @@
 import { Routes } from "@angular/router";
 import { HomeComponent } from "./shared/features/home/home.component";
+import {ContactComponent} from "./components/contact/contact.component";
+import {RegisterComponent} from "./components/auth/register/register.component";
 
 export const APP_ROUTES: Routes = [
   {
     path: "home",
     component: HomeComponent,
   },
+  { path: 'contact', component: ContactComponent },
+  { path: 'login', loadComponent: () => import('./components/auth/login/login.component').then(m => m.LoginComponent) },
+  { path: 'register', component: RegisterComponent },
   {
     path: "products",
     loadChildren: () =>

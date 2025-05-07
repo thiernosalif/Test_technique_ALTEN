@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -36,4 +37,15 @@ public interface CartController {
     })
     @GetMapping(value = APP_API_ROOT + "/cart")
     public Set<Product> getCart(Principal principal);
+
+
+@Operation(summary = "Delete Product", description = "Delete Product", tags = "Product")
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Delete Product", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = Product.class)) }),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "404", description = "Product Not Found", content = @Content())
+})
+@DeleteMapping (value = APP_API_ROOT + "/remove")
+public ResponseEntity<String> removeProductFromCart(@RequestParam Long productId, Principal principal);
 }
