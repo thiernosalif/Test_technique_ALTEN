@@ -30,6 +30,6 @@ public class Product {
     private InventoryStatus inventoryStatus;
 
     private int rating;
-    private Instant createdAt;
-    private Instant updatedAt;
+    private long createdAt;
+    private long updatedAt;
 }

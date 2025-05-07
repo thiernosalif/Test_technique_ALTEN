@@ -2,6 +2,7 @@ import { enableProdMode, importProvidersFrom } from "@angular/core";
 
 import { registerLocaleData } from "@angular/common";
 import {
+  HTTP_INTERCEPTORS,
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
@@ -14,6 +15,8 @@ import { ConfirmationService, MessageService } from "primeng/api";
 import { DialogService } from "primeng/dynamicdialog";
 import { AppComponent } from "./app/app.component";
 import { environment } from "./environments/environment";
+import {APP_PROVIDERS} from "./app/app.config";
+import {AuthInterceptor} from "./app/interceptors/auth.interceptor";
 
 if (environment.production) {
   enableProdMode();
@@ -21,16 +24,8 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
-    importProvidersFrom(BrowserModule),
-    provideHttpClient(
-      withInterceptorsFromDi(),
-    ),
-    provideAnimations(),
-    provideRouter(APP_ROUTES),
-    ConfirmationService,
-    MessageService,
-    DialogService,
-  ],
+    ...APP_PROVIDERS,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  ]
 }).catch((err) => console.log(err));
-
 registerLocaleData(localeFr, "fr-FR");

@@ -1,6 +1,7 @@
 package com.alten.ecommerce.controllers.apis;
 
 import com.alten.ecommerce.dtos.ProductDto;
+import com.alten.ecommerce.dtos.ProductUpdateDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -58,4 +59,14 @@ public interface ProductController {
     @PreAuthorize("authentication.name == 'admin@admin.com'")
     @DeleteMapping(value = APP_API_ROOT + "/products/{id}")
     void deleteProduct(@PathVariable Long id);
+
+    @Operation(summary = "Update ProductDto", description = "Update ProductDto", tags = "ProductDto")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Updated ProductDto", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto.class)) }),
+            @ApiResponse(responseCode = "400", description = "Bad request")
+    })
+    @PreAuthorize("authentication.name == 'admin@admin.com'")
+    @PostMapping(value = APP_API_ROOT + "/products/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductUpdateDto dto);
 }
