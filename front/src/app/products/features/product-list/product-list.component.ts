@@ -6,9 +6,12 @@ import { ButtonModule } from "primeng/button";
 import { CardModule } from "primeng/card";
 import { DataViewModule } from 'primeng/dataview';
 import { DialogModule } from 'primeng/dialog';
+import {ProductService} from "../../../services/product.service";
+import {CartService} from "../../../services/cart.service";
+import {MessageService} from "primeng/api";
 
 const emptyProduct: Product = {
-  id: 0,
+  id: null,
   code: "",
   name: "",
   description: "",
@@ -32,16 +35,23 @@ const emptyProduct: Product = {
   imports: [DataViewModule, CardModule, ButtonModule, DialogModule, ProductFormComponent],
 })
 export class ProductListComponent implements OnInit {
-  private readonly productsService = inject(ProductsService);
 
+  constructor(
+    private messageService: MessageService
+  ) {}
+
+  private readonly productsService = inject(ProductService);
   public readonly products = this.productsService.products;
+
+  private readonly cartService = inject(CartService);
+  public readonly carts = this.cartService;
 
   public isDialogVisible = false;
   public isCreation = false;
   public readonly editedProduct = signal<Product>(emptyProduct);
 
   ngOnInit() {
-    this.productsService.get().subscribe();
+    this.productsService.getAll().subscribe();
   }
 
   public onCreate() {
@@ -56,9 +66,6 @@ export class ProductListComponent implements OnInit {
     this.editedProduct.set(product);
   }
 
-  public onDelete(product: Product) {
-    this.productsService.delete(product.id).subscribe();
-  }
 
   public onSave(product: Product) {
     if (this.isCreation) {
@@ -69,11 +76,32 @@ export class ProductListComponent implements OnInit {
     this.closeDialog();
   }
 
+  public onDelete(product: Product) {
+    this.productsService.delete(product.id).subscribe();
+  }
+
   public onCancel() {
     this.closeDialog();
   }
 
   private closeDialog() {
     this.isDialogVisible = false;
+  }
+
+  addToCart(product: Product): void {
+   /* if (!product || !product.id) {
+      this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Produit invalide' });
+      return;
+    }*/
+
+    this.carts.addToCart(product).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Ajouté au panier', detail: `${product.name} a été ajouté.` });
+      },
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Impossible d\'ajouter le produit au panier' });
+        console.error(err);
+      }
+    });
   }
 }

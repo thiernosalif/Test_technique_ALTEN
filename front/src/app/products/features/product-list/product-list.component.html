@@ -8,7 +8,8 @@
       <p-card class="flex flex-column relative block mb-2">
         <!-- (onClick)="addToCart(product)" -->
         <div class="mb-2 flex justify-content-end z-10">
-          <p-button label="Ajouter au panier" icon="pi pi-shopping-cart" size="small"  />
+          <p-button label="Ajouter au panier" icon="pi pi-shopping-cart"
+                    (onClick)="addToCart(product)" size="small"  />
         </div>
 
         <span class="font-medium text-secondary text-sm">{{ product.category }}</span>

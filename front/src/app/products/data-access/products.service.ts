@@ -9,7 +9,7 @@ import { catchError, Observable, of, tap } from "rxjs";
 
     private readonly http = inject(HttpClient);
     private readonly path = "/api/products";
-    
+
     private readonly _products = signal<Product[]>([]);
 
     public readonly products = this._products.asReadonly();
@@ -43,7 +43,7 @@ import { catchError, Observable, of, tap } from "rxjs";
         );
     }
 
-    public delete(productId: number): Observable<boolean> {
+    public delete(productId: number | null): Observable<boolean> {
         return this.http.delete<boolean>(`${this.path}/${productId}`).pipe(
             catchError(() => {
                 return of(true);

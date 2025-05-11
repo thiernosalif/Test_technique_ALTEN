@@ -13,13 +13,14 @@ export class CartService {
     return this.http.get<Product[]>(`${this.apiUrl}`);
   }
 
-  removeFromCart(productId: number): Observable<void> {
+  removeFromCart(productId: number | null): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${productId}`);
   }
 
-  addToCart(productId: number): Observable<void> {
-    return this.http.post<void>(`http://localhost:8081/api/v1/ecom/cart/${productId}`, {});
+  addToCart(product: Product): Observable<void> {
+    return this.http.post<void>(`http://localhost:8081/api/v1/ecom/cart/add`, product);
   }
+
 
 
 

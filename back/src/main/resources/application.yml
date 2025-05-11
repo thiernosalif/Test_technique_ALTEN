@@ -5,27 +5,23 @@ spring:
   application:
     name: ALTEN_ECOMMERCE
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
   datasource:
-    url: jdbc:h2:mem:dcbapp
-    driverClassName: org.h2.Driver
-    username: sa
-    password: password
+    url: jdbc:mysql://localhost:3306/test_alten?useSSL=false&serverTimezone=UTC
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
-    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create-drop   # crée automatiquement les tables à chaque démarrage
+    show-sql: true        # affiche les requêtes SQL dans la console
     properties:
       hibernate:
-        format_sql: true
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: true
-    database-platform: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.MySQL8Dialect  # dialecte MySQL 8
 
   main:
     allow-circular-references: true
+
   sql:
     init:
       mode: always
@@ -39,8 +35,7 @@ spring:
 jwt:
   secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
   expiration: 86400000 # a day
-     # refresh-token:
-       # expiration: 604800000 # 7 days
+
 springdoc:
   swagger-ui:
     enabled: true
@@ -60,9 +55,8 @@ logging:
       springframework:
         security: DEBUG
         web: DEBUG
-      hibernate: ERROR
+      hibernate:
+        SQL: DEBUG
     com:
       alten:
         ecommerce: DEBUG
-
-

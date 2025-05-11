@@ -20,13 +20,20 @@ public class CartControllerImpl implements CartController {
     @Autowired
     private CartService cartService;
 
+
     @Override
-    public void addToCart(Long productId, Principal principal) {
-        cartService.addProductToCart(principal.getName(), productId);
+    public ResponseEntity<Void> addToCart(ProductDto product, Principal principal) {
+
+        if (product.getId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        String email = principal.getName();
+        cartService.addProductToCart(email, product);
+        return null;
     }
 
     @Override
-    public Set<Product> getCart(Principal principal) {
+    public Set<ProductDto> getCart(Principal principal) {
         return cartService.getCartProducts(principal.getName());
     }
 

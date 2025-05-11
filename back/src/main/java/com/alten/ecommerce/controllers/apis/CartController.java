@@ -17,16 +17,17 @@ import java.util.Set;
 import static com.alten.ecommerce.utils.Constants.APP_API_ROOT;
 
 @CrossOrigin(origins = "http://localhost:4200/")
+@RestController
+
 public interface CartController {
 
-    @Operation(summary = "Add product to Cart", description = "Add product to Cart", tags = "Cart")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Product added", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = Product.class)) }),
             @ApiResponse(responseCode = "400", description = "Bad request")
     })
     @PostMapping(value = APP_API_ROOT + "/cart/add")
-    public void addToCart(@RequestParam Long productId, Principal principal);
+    public ResponseEntity<Void> addToCart(@RequestBody ProductDto product, Principal principal);
 
     @Operation(summary = "Get all Products", description = "Get a list of Products", tags = "Products")
     @ApiResponses(value = {
@@ -36,16 +37,16 @@ public interface CartController {
             @ApiResponse(responseCode = "404", description = "Product Not Found", content = @Content())
     })
     @GetMapping(value = APP_API_ROOT + "/cart")
-    public Set<Product> getCart(Principal principal);
+    public Set<ProductDto> getCart(Principal principal);
 
 
-@Operation(summary = "Delete Product", description = "Delete Product", tags = "Product")
-@ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Delete Product", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Product.class)) }),
-        @ApiResponse(responseCode = "400", description = "Bad request"),
-        @ApiResponse(responseCode = "404", description = "Product Not Found", content = @Content())
-})
-@DeleteMapping (value = APP_API_ROOT + "/remove")
-public ResponseEntity<String> removeProductFromCart(@RequestParam Long productId, Principal principal);
+    @Operation(summary = "Delete Product", description = "Delete Product", tags = "Product")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Delete Product", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Product.class)) }),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "404", description = "Product Not Found", content = @Content())
+    })
+    @DeleteMapping (value = APP_API_ROOT + "/remove")
+    public ResponseEntity<String> removeProductFromCart(@RequestParam Long productId, Principal principal);
 }
